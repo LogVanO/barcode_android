@@ -1,4 +1,4 @@
-# barcode_android
+# barcode_scanner_mobile
 
 A new Flutter project.
 
