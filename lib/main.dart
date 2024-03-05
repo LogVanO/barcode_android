@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-              child: const Text('MobileScanner with ScanWindow'),
+              child: const Text('Connect to PC'),
             ),
           ],
         ),
