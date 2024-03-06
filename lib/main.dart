@@ -3,15 +3,11 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'barcode_scanner_window.dart';
 
 void main() {
-  runApp(const MyApp(
-    connectedIp: "",
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key, required this.connectedIp}) : super(key: key);
-
-  final String connectedIp;
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -36,7 +32,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, this.connectedIp})
+      : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -48,17 +45,15 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final String? connectedIp;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // connect to websocket server
-  final channel = WebSocketChannel.connect(
-    Uri.parse(
-        'ws://192.168.2.49:8001'), // change to 'ws://IP:port' after getting ip address
-  );
+  late WebSocketChannel channel = WebSocketChannel.connect(
+      Uri.parse('ws://' + (widget.connectedIp ?? "192.168.0.1")));
 
   void _sendMessage() {
     channel.sink.add("Test");

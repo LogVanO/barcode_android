@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'main.dart';
 
 class BarcodeScannerWithScanWindow extends StatefulWidget {
   const BarcodeScannerWithScanWindow({super.key, required this.scanningMode});
@@ -23,6 +24,15 @@ class _BarcodeScannerWithScanWindowState
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
     setState(() => this.barcode = barcode.barcodes.first);
+
+    if (widget.scanningMode == Mode.connecting) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(
+              title: "Home", connectedIp: barcode.barcodes.first.displayValue),
+        ),
+      );
+    }
   }
 
   MobileScannerArguments? arguments;
