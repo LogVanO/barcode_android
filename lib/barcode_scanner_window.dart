@@ -20,16 +20,23 @@ class _BarcodeScannerWithScanWindowState
   late MobileScannerController controller = MobileScannerController();
   Barcode? barcode;
   BarcodeCapture? capture;
+  bool captured = false;
 
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
     setState(() => this.barcode = barcode.barcodes.first);
 
-    if (widget.scanningMode == Mode.connecting) {
+    if (widget.scanningMode == Mode.connecting && !captured) {
+      captured = true;
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MyHomePage(
-              title: "Home", connectedIp: barcode.barcodes.first.displayValue),
+            // set to show barcode scan button instead of connect to pc button
+            // set value of channel
+            title: "Home", 
+            connectedIp: (barcode.barcodes.first.displayValue ?? ""),
+            connectedBool: true,
+            ),
         ),
       );
     }
@@ -45,7 +52,7 @@ class _BarcodeScannerWithScanWindowState
       height: 200,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('With Scan window')),
+      appBar: AppBar(title: const Text('Scan QR to connect to PC')),
       backgroundColor: Colors.black,
       body: Builder(
         builder: (context) {
@@ -76,35 +83,6 @@ class _BarcodeScannerWithScanWindowState
                 ),
               CustomPaint(
                 painter: ScannerOverlay(scanWindow),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  alignment: Alignment.bottomCenter,
-                  height: 100,
-                  color: Colors.black.withOpacity(0.4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Center(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width - 120,
-                          height: 50,
-                          child: FittedBox(
-                            child: Text(
-                              barcode?.displayValue ?? 'Scan something!',
-                              overflow: TextOverflow.fade,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium!
-                                  .copyWith(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ],
           );

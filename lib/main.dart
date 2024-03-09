@@ -13,26 +13,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Barcode to PC',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Barcode to PC'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, this.connectedIp})
+  const MyHomePage({Key? key, required this.title, this.connectedIp = "", this.connectedBool = false})
       : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -45,15 +36,16 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-  final String? connectedIp;
+  final String connectedIp;
+  final bool connectedBool;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late WebSocketChannel channel = WebSocketChannel.connect(
-      Uri.parse('ws://' + (widget.connectedIp ?? "192.168.0.1")));
+
+  late WebSocketChannel channel;
 
   void _sendMessage() {
     channel.sink.add("Test");
@@ -61,6 +53,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.connectedBool) {
+      channel = WebSocketChannel.connect(
+        Uri.parse('ws://' + widget.connectedIp), // change to 'ws://IP:port' after getting ip address
+      );
+    } else {
+      channel = WebSocketChannel.connect(
+        Uri.parse('ws://echo.websocket.org/')
+      );
+    }
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -92,16 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Message echoed from websocket:',
-            ),
-            StreamBuilder(
-              stream: channel.stream,
-              builder: (context, snapshot) {
-                return Text(snapshot.hasData ? '${snapshot.data}' : '');
-              },
-            ),
+          children:
+          !widget.connectedBool ? // show connect button if not connected
+          <Widget>[
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -114,13 +109,15 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Connect to PC'),
             ),
+          ]
+          : // show scan button if connected
+          <Widget>[
+            ElevatedButton(
+              onPressed: _sendMessage,
+              child: const Text('Send Message to PC'),
+            ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _sendMessage,
-        tooltip: 'Send message',
-        child: const Icon(Icons.send),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
