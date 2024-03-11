@@ -20,7 +20,8 @@ class _BarcodeScannerWithScanWindowState
   Barcode? barcode;
   BarcodeCapture? capture;
   bool captured = false;
-  String title = "Scan QR to connect to PC";
+
+ late String title;
 
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
@@ -29,9 +30,6 @@ class _BarcodeScannerWithScanWindowState
     if (widget.scanningMode == Mode.connecting && !captured) {
       captured = true;
       controller.stop();
-      setState(() {
-        title = "Scan Barcode";
-      });
       Navigator.pop(
         context,
         (barcode.barcodes.first.displayValue ?? "")
@@ -52,6 +50,11 @@ class _BarcodeScannerWithScanWindowState
 
   @override
   Widget build(BuildContext context) {
+    if (widget.scanningMode == Mode.connecting) {
+      title = "Scan QR to connect to PC";
+    } else {
+      title = "Scan Barcode";
+    }
     final scanWindow = Rect.fromCenter(
       center: MediaQuery.of(context).size.center(Offset.zero),
       width: 200,
