@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'main.dart';
 
 class BarcodeScannerWithScanWindow extends StatefulWidget {
   const BarcodeScannerWithScanWindow({super.key, required this.scanningMode});
@@ -21,6 +20,7 @@ class _BarcodeScannerWithScanWindowState
   Barcode? barcode;
   BarcodeCapture? capture;
   bool captured = false;
+  String title = "Scan QR to connect to PC";
 
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
@@ -29,16 +29,12 @@ class _BarcodeScannerWithScanWindowState
     if (widget.scanningMode == Mode.connecting && !captured) {
       captured = true;
       controller.stop();
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => MyHomePage(
-            // set to show barcode scan button instead of connect to pc button
-            // set value of channel
-            title: "Home", 
-            connectedIp: (barcode.barcodes.first.displayValue ?? ""),
-            connectedBool: true,
-            ),
-        ),
+      setState(() {
+        title = "Scan Barcode";
+      });
+      Navigator.pop(
+        context,
+        (barcode.barcodes.first.displayValue ?? "")
       );
     }
 
@@ -62,7 +58,7 @@ class _BarcodeScannerWithScanWindowState
       height: 200,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan QR to connect to PC')),
+      appBar: AppBar(title: Text(title)),
       backgroundColor: Colors.black,
       body: Builder(
         builder: (context) {

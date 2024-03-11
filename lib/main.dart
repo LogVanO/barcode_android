@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, this.connectedIp = "", this.connectedBool = false})
+  const MyHomePage({Key? key, required this.title})
       : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -36,8 +36,6 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-  final String connectedIp;
-  final bool connectedBool;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -46,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   late WebSocketChannel channel;
+  bool connectedBool = false;
 
   void _sendMessage(String message) {
     channel.sink.add(message);
@@ -53,16 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (widget.connectedBool) {
-      channel = WebSocketChannel.connect(
-        Uri.parse('ws://' + widget.connectedIp), // change to 'ws://IP:port' after getting ip address
-      );
-    } else {
-      channel = WebSocketChannel.connect(
-        Uri.parse('ws://echo.websocket.org/')
-      );
-    }
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -95,17 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children:
-          !widget.connectedBool ? // show connect button if not connected
+          !connectedBool ? // show connect button if not connected
           <Widget>[
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const BarcodeScannerWithScanWindow(
-                      scanningMode: Mode.connecting,
-                    ),
-                  ),
-                );
+                _connectPC(context);
               },
               child: const Text('Connect to PC'),
             ),
@@ -128,6 +111,25 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     channel.sink.close();
     super.dispose();
+  }
+
+  Future<void> _connectPC(BuildContext context) async {
+    // await return value from scanner
+    final ip = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const BarcodeScannerWithScanWindow(
+          scanningMode: Mode.connecting,
+        ),
+      ),
+    );
+
+    setState(() {
+      channel = WebSocketChannel.connect(
+        Uri.parse('ws://' + ip),
+      );
+      connectedBool = true;
+    });
   }
 
   Future<void> _scanBarcode(BuildContext context) async {
