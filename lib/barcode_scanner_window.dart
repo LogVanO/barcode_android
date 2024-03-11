@@ -27,18 +27,14 @@ class _BarcodeScannerWithScanWindowState
     capture = barcode;
     setState(() => this.barcode = barcode.barcodes.first);
 
-    if (widget.scanningMode == Mode.connecting && !captured) {
+    // only capture one barcode
+    if (!captured) {
       captured = true;
-      controller.stop();
-      Navigator.pop(
-        context,
-        (barcode.barcodes.first.displayValue ?? "")
-      );
-    }
 
-    if (widget.scanningMode == Mode.scanning && !captured) {
-      captured = true;
+      //stop the scanner controller
       controller.stop();
+
+      // return the scanned value
       Navigator.pop(
         context,
         (barcode.barcodes.first.displayValue ?? "")
@@ -50,11 +46,14 @@ class _BarcodeScannerWithScanWindowState
 
   @override
   Widget build(BuildContext context) {
+
+    // set title depending on scan mode
     if (widget.scanningMode == Mode.connecting) {
       title = "Scan QR to connect to PC";
     } else {
       title = "Scan Barcode";
     }
+
     final scanWindow = Rect.fromCenter(
       center: MediaQuery.of(context).size.center(Offset.zero),
       width: 200,

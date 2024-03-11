@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late WebSocketChannel channel;
   bool connectedBool = false;
 
+  // send a message over the websocket channel
   void _sendMessage(String message) {
     channel.sink.add(message);
   }
@@ -136,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _connectPC(BuildContext context) async {
-    // await return value from scanner
+    // await ip address from scanner
     final ip = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -146,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    // connect the websocket channel to the IP address
     setState(() {
       channel = WebSocketChannel.connect(
         Uri.parse('ws://' + ip),
@@ -155,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _scanBarcode(BuildContext context) async {
-    // await return value from scanner
+    // await barcode value from scanner
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -165,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    // send the message to PC
     _sendMessage(result);
   }
 }
