@@ -1,3 +1,12 @@
+// TO DO:
+//
+// - Add Disconnect button when connected:
+//     setState() {
+//       channel.close()
+//       connectedBool = false
+//     }
+//
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'barcode_scanner_window.dart';
@@ -99,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 _scanBarcode(context);
               },
-              child: const Text('Send Message to PC'),
+              child: const Text('New Barcode Scan'),
             ),
           ],
         ),
