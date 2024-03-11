@@ -47,8 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late WebSocketChannel channel;
 
-  void _sendMessage() {
-    channel.sink.add("Test");
+  void _sendMessage(String message) {
+    channel.sink.add(message);
   }
 
   @override
@@ -113,7 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
           : // show scan button if connected
           <Widget>[
             ElevatedButton(
-              onPressed: _sendMessage,
+              onPressed: () {
+                _scanBarcode(context);
+              },
               child: const Text('Send Message to PC'),
             ),
           ],
@@ -126,5 +128,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     channel.sink.close();
     super.dispose();
+  }
+
+  Future<void> _scanBarcode(BuildContext context) async {
+    // await return value from scanner
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const BarcodeScannerWithScanWindow(
+          scanningMode: Mode.scanning,
+        ),
+      ),
+    );
+
+    _sendMessage(result);
   }
 }

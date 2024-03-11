@@ -28,6 +28,7 @@ class _BarcodeScannerWithScanWindowState
 
     if (widget.scanningMode == Mode.connecting && !captured) {
       captured = true;
+      controller.stop();
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MyHomePage(
@@ -38,6 +39,15 @@ class _BarcodeScannerWithScanWindowState
             connectedBool: true,
             ),
         ),
+      );
+    }
+
+    if (widget.scanningMode == Mode.scanning && !captured) {
+      captured = true;
+      controller.stop();
+      Navigator.pop(
+        context,
+        (barcode.barcodes.first.displayValue ?? "")
       );
     }
   }
