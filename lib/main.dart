@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'barcode_scanner_window.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(const MyApp());
@@ -115,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (ip == null || ip.substring(ip.length - 5) != ":8001") {
+      showErrorToast();
       return;
     }
 
@@ -125,6 +127,16 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       connectedBool = true;
     });
+  }
+
+  void showErrorToast() {
+    Fluttertoast.showToast(
+        msg: 'Error Connecting: Invalid IP',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white);
   }
 
   Future<void> _scanBarcode(
