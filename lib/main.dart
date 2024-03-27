@@ -5,14 +5,6 @@
 //       channel.close()
 //       connectedBool = false
 //     }
-//
-// - Add helpful text under scanner window depending on scan mode:
-//     In barcode_scanner_window.dart:
-//     If connecting mode:
-//          "Start the Scanner Companion app on your PC,
-//             then scan the QR code to connect."
-//     If scanning mode:
-//          "On your PC, select where you want scanned codes to be entered."
 
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
