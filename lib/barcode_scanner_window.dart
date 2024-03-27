@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -41,6 +42,9 @@ class _BarcodeScannerWithScanWindowState
       Navigator.pop(context, (barcode.barcodes.first.displayValue ?? ""));
     } else {
       widget.channelRef?.sink.add(barcode.barcodes.first.displayValue ?? "");
+
+      // click sound to be updated toa beep sound later
+      SystemSound.play(SystemSoundType.click);
     }
   }
 
