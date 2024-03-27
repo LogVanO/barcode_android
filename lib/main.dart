@@ -1,11 +1,5 @@
 // TO DO:
 //
-// - Add Disconnect button when connected:
-//     setState() {
-//       channel.close()
-//       connectedBool = false
-//     }
-//
 // - If websocket disconnects, then reset main page:
 //     setState() {
 //       channel.close()
@@ -121,6 +115,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       _scanBarcode(context, channel);
                     },
                     child: const Text('New Barcode Scan'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        channel.sink.close();
+                        connectedBool = false;
+                      });
+                    },
+                    child: const Text('Disconnect'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ],
         ),
