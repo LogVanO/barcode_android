@@ -119,6 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    if (ip == null || ip.substring(ip.length - 5) != ":8001") {
+      return;
+    }
+
     // connect the websocket channel to the IP address
     setState(() {
       channel = WebSocketChannel.connect(
@@ -138,6 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
             scanningMode: Mode.scanning, channelRef: channel),
       ),
     );
+
+    if (result == null) {
+      return;
+    }
 
     // send the message to PC
     _sendMessage(result);
