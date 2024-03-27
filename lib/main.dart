@@ -51,11 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late WebSocketChannel channel;
   bool connectedBool = false;
 
-  // send a message over the websocket channel
-  void _sendMessage(String message) {
-    channel.sink.add(message);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,19 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _scanBarcode(
       BuildContext context, WebSocketChannel channel) async {
     // await barcode value from scanner
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BarcodeScannerWithScanWindow(
             scanningMode: Mode.scanning, channelRef: channel),
       ),
     );
-
-    if (result == null) {
-      return;
-    }
-
-    // send the message to PC
-    _sendMessage(result);
   }
 }
