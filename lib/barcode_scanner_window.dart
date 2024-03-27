@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class BarcodeScannerWithScanWindow extends StatefulWidget {
-  const BarcodeScannerWithScanWindow({super.key, required this.scanningMode});
+  const BarcodeScannerWithScanWindow(
+      {super.key, required this.scanningMode, this.channelRef});
 
   final Mode scanningMode;
+  final WebSocketChannel? channelRef;
 
   @override
   State<BarcodeScannerWithScanWindow> createState() =>
@@ -21,24 +24,23 @@ class _BarcodeScannerWithScanWindowState
   BarcodeCapture? capture;
   bool captured = false;
 
- late String title;
+  late String title;
 
   Future<void> onDetect(BarcodeCapture barcode) async {
     capture = barcode;
     setState(() => this.barcode = barcode.barcodes.first);
 
     // only capture one barcode
-    if (!captured) {
+    if (!captured && widget.scanningMode == Mode.connecting) {
       captured = true;
 
       //stop the scanner controller
       controller.stop();
 
       // return the scanned value
-      Navigator.pop(
-        context,
-        (barcode.barcodes.first.displayValue ?? "")
-      );
+      Navigator.pop(context, (barcode.barcodes.first.displayValue ?? ""));
+    } else {
+      widget.channelRef?.sink.add(barcode.barcodes.first.displayValue ?? "");
     }
   }
 
@@ -46,7 +48,6 @@ class _BarcodeScannerWithScanWindowState
 
   @override
   Widget build(BuildContext context) {
-
     // set title depending on scan mode
     if (widget.scanningMode == Mode.connecting) {
       title = "Scan QR to connect to PC";

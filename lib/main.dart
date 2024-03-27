@@ -45,8 +45,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title})
-      : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -64,7 +63,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   late WebSocketChannel channel;
   bool connectedBool = false;
 
@@ -106,25 +104,25 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children:
-          !connectedBool ? // show connect button if not connected
-          <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                _connectPC(context);
-              },
-              child: const Text('Connect to PC'),
-            ),
-          ]
-          : // show scan button if connected
-          <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                _scanBarcode(context);
-              },
-              child: const Text('New Barcode Scan'),
-            ),
-          ],
+          children: !connectedBool
+              ? // show connect button if not connected
+              <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      _connectPC(context);
+                    },
+                    child: const Text('Connect to PC'),
+                  ),
+                ]
+              : // show scan button if connected
+              <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      _scanBarcode(context, channel);
+                    },
+                    child: const Text('New Barcode Scan'),
+                  ),
+                ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
@@ -156,14 +154,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> _scanBarcode(BuildContext context) async {
+  Future<void> _scanBarcode(
+      BuildContext context, WebSocketChannel channel) async {
     // await barcode value from scanner
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const BarcodeScannerWithScanWindow(
-          scanningMode: Mode.scanning,
-        ),
+        builder: (context) => BarcodeScannerWithScanWindow(
+            scanningMode: Mode.scanning, channelRef: channel),
       ),
     );
 
